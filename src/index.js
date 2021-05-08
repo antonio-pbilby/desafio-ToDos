@@ -26,15 +26,11 @@ function checksExistsUserAccount(request, response, next) {
 app.post("/users", (request, response) => {
   // Complete aqui
   const { name, username } = request.body;
-  if (!username || !name)
-    return response.status(400).json({ error: "Invalid" });
 
   const userAlreadyExists = users.some((user) => user.username === username);
 
   if (userAlreadyExists)
-    return response
-      .status(400)
-      .json({ error: `O usuário ${username} já existe.` });
+    return response.status(400).json({ error: "O usuário já existe." });
 
   const user = {
     id: uuidv4(),
@@ -44,7 +40,7 @@ app.post("/users", (request, response) => {
   };
 
   users.push(user);
-  return response.status(201).json({ user });
+  return response.status(201).json(user);
 });
 
 app.get("/todos", checksExistsUserAccount, (request, response) => {
@@ -52,7 +48,7 @@ app.get("/todos", checksExistsUserAccount, (request, response) => {
   const { user } = request;
   const todos = user.todos;
 
-  return response.json({ todos });
+  return response.json(todos);
 });
 
 app.post("/todos", checksExistsUserAccount, (request, response) => {
@@ -69,7 +65,7 @@ app.post("/todos", checksExistsUserAccount, (request, response) => {
   };
 
   user.todos.push(todo);
-  return response.status(201).json({ todo });
+  return response.status(201).json(todo);
 });
 
 app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
@@ -85,7 +81,7 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
   userTodo.title = title;
   userTodo.deadline = deadline;
 
-  return response.json({ userTodo });
+  return response.json(userTodo);
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
@@ -98,7 +94,7 @@ app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
 
   userTodo.done = true;
 
-  return response.json({ userTodo });
+  return response.json(userTodo);
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
@@ -111,10 +107,7 @@ app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
 
   user.todos.splice(userTodo, 1);
 
-  return response.status(204);
+  return response.status(204).send();
 });
 
-app.get("/users", (request, response) => {
-  return response.json({ users });
-});
 module.exports = app;
